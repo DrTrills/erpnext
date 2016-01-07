@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from frappe import _
 
 def get_data():
@@ -8,7 +9,7 @@ def get_data():
 			"items": [
 				{
 					"type": "doctype",
-					"name": "Journal Voucher",
+					"name": "Journal Entry",
 					"description": _("Accounting journal entries.")
 				},
 				{
@@ -74,6 +75,11 @@ def get_data():
 			"items": [
 				{
 					"type": "doctype",
+					"name": "Company",
+					"description": _("Company (not Customer or Supplier) master.")
+				},
+				{
+					"type": "doctype",
 					"name": "Fiscal Year",
 					"description": _("Financial / accounting year.")
 				},
@@ -102,18 +108,23 @@ def get_data():
 				},
 				{
 					"type": "doctype",
-					"name": "Sales Taxes and Charges Master",
+					"name": "Tax Rule",
+					"description": _("Tax Rule for transactions.")
+				},
+				{
+					"type": "doctype",
+					"name": "Sales Taxes and Charges Template",
 					"description": _("Tax template for selling transactions.")
 				},
 				{
 					"type": "doctype",
-					"name": "Purchase Taxes and Charges Master",
+					"name": "Purchase Taxes and Charges Template",
 					"description": _("Tax template for buying transactions.")
 				},
 				{
 					"type": "doctype",
-					"name": "POS Setting",
-					"label": _("Point-of-Sale Setting"),
+					"name": "POS Profile",
+					"label": _("Point-of-Sale Profile"),
 					"description": _("Rules to calculate shipping amount for a sale")
 				},
 				{
@@ -138,8 +149,8 @@ def get_data():
 				},
 				{
 					"type":"doctype",
-					"name": "Budget Distribution",
-					"description": _("Seasonality for setting budgets.")
+					"name": "Monthly Distribution",
+					"description": _("Seasonality for setting budgets, targets etc.")
 				},
 				{
 					"type": "doctype",
@@ -178,6 +189,18 @@ def get_data():
 				},
 				{
 					"type": "report",
+					"name": "Trial Balance for Party",
+					"doctype": "GL Entry",
+					"is_query_report": True,
+				},
+				{
+					"type": "report",
+					"name": "Gross Profit",
+					"doctype": "Sales Invoice",
+					"is_query_report": True
+				},
+				{
+					"type": "report",
 					"name": "Accounts Receivable",
 					"doctype": "Sales Invoice",
 					"is_query_report": True
@@ -208,6 +231,12 @@ def get_data():
 				},
 				{
 					"type": "report",
+					"name": "Cash Flow",
+					"doctype": "GL Entry",
+					"is_query_report": True
+				},
+				{
+					"type": "report",
 					"name": "Profit and Loss Statement",
 					"doctype": "GL Entry",
 					"is_query_report": True
@@ -217,13 +246,7 @@ def get_data():
 					"name": "financial-analytics",
 					"label": _("Financial Analytics"),
 					"icon": "icon-bar-chart",
-				},
-				{
-					"type": "report",
-					"name": "Gross Profit",
-					"doctype": "Sales Invoice",
-					"is_query_report": True
-				},
+				}
 			]
 		},
 		{
@@ -234,7 +257,7 @@ def get_data():
 					"type": "report",
 					"name": "Bank Reconciliation Statement",
 					"is_query_report": True,
-					"doctype": "Journal Voucher"
+					"doctype": "Journal Entry"
 				},
 				{
 					"type": "report",
@@ -264,31 +287,19 @@ def get_data():
 					"type": "report",
 					"name": "Bank Clearance Summary",
 					"is_query_report": True,
-					"doctype": "Journal Voucher"
+					"doctype": "Journal Entry"
 				},
 				{
 					"type": "report",
 					"name": "Payment Period Based On Invoice Date",
 					"is_query_report": True,
-					"doctype": "Journal Voucher"
+					"doctype": "Journal Entry"
 				},
 				{
 					"type": "report",
 					"name": "Sales Partners Commission",
 					"is_query_report": True,
 					"doctype": "Sales Invoice"
-				},
-				{
-					"type": "report",
-					"name": "Customer Account Head",
-					"is_query_report": True,
-					"doctype": "Account"
-				},
-				{
-					"type": "report",
-					"name": "Supplier Account Head",
-					"is_query_report": True,
-					"doctype": "Account"
 				},
 				{
 					"type": "report",
@@ -320,6 +331,45 @@ def get_data():
 					"is_query_report": True,
 					"doctype": "Sales Invoice"
 				},
+				{
+					"type": "report",
+					"name": "Accounts Receivable Summary",
+					"doctype": "Sales Invoice",
+					"is_query_report": True
+				},
+				{
+					"type": "report",
+					"name": "Accounts Payable Summary",
+					"doctype": "Purchase Invoice",
+					"is_query_report": True
+				},
+				{
+					"type": "report",
+					"is_query_report": True,
+					"name": "Customer Credit Balance",
+					"doctype": "Customer"
+				},
 			]
 		},
+		{
+			"label": _("Help"),
+			"icon": "icon-facetime-video",
+			"items": [
+				{
+					"type": "help",
+					"label": _("Chart of Accounts"),
+					"youtube_id": "DyR-DST-PyA"
+				},
+				{
+					"type": "help",
+					"label": _("Opening Accounting Balance"),
+					"youtube_id": "kdgM20Q-q68"
+				},
+				{
+					"type": "help",
+					"label": _("Setting up Taxes"),
+					"youtube_id": "nQ1zZdPgdaQ"
+				}
+			]
+		}
 	]

@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from frappe import _
 
 def get_data():
@@ -31,6 +32,11 @@ def get_data():
 					"name": "Activity Type",
 					"description": _("Types of activities for Time Sheets"),
 				},
+				{
+					"type": "doctype",
+					"name": "Activity Cost",
+					"description": _("Cost of various activities"),
+				},
 			]
 		},
 		{
@@ -61,6 +67,17 @@ def get_data():
 					"is_query_report": True,
 					"name": "Project wise Stock Tracking",
 					"doctype": "Project"
+				},
+			]
+		},
+		{
+			"label": _("Help"),
+			"icon": "icon-facetime-video",
+			"items": [
+				{
+					"type": "help",
+					"label": _("Managing Projects"),
+					"youtube_id": "egxIGwtoKI4"
 				},
 			]
 		},

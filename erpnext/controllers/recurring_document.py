@@ -4,7 +4,7 @@ import frappe.utils
 import frappe.defaults
 
 from frappe.utils import add_days, cint, cstr, date_diff, flt, getdate, nowdate, \
-	get_first_day, get_last_day, comma_and
+	get_first_day, get_last_day, comma_and, split_emails
 from frappe.model.naming import make_autoname
 
 from frappe import _, msgprint, throw
@@ -34,10 +34,12 @@ def manage_recurring_documents(doctype, next_date=None, commit=True):
 
 	date_field = date_field_map[doctype]
 
+	condition = " and ifnull(status, '') != 'Stopped'" if doctype in ("Sales Order", "Purchase Order") else ""
+
 	recurring_documents = frappe.db.sql("""select name, recurring_id
-		from `tab{}` where ifnull(is_recurring, 0)=1
-		and docstatus=1 and next_date='{}'
-		and next_date <= ifnull(end_date, '2199-12-31')""".format(doctype, next_date))
+		from `tab{0}` where is_recurring=1
+		and docstatus=1 and next_date=%s
+		and next_date <= ifnull(end_date, '2199-12-31') {1}""".format(doctype, condition), next_date)
 
 	exception_list = []
 	for ref_document, recurring_id in recurring_documents:
@@ -83,12 +85,9 @@ def make_new_document(ref_wrapper, date_field, posting_date):
 
 	# get last day of the month to maintain period if the from date is first day of its own month
 	# and to date is the last day of its own month
-	if (cstr(get_first_day(ref_wrapper.from_date)) == \
-			cstr(ref_wrapper.from_date)) and \
-		(cstr(get_last_day(ref_wrapper.to_date)) == \
-			cstr(ref_wrapper.to_date)):
-		to_date = get_last_day(get_next_date(ref_wrapper.to_date,
-			mcount))
+	if (cstr(get_first_day(ref_wrapper.from_date)) == cstr(ref_wrapper.from_date)) and \
+		(cstr(get_last_day(ref_wrapper.to_date)) == cstr(ref_wrapper.to_date)):
+			to_date = get_last_day(get_next_date(ref_wrapper.to_date, mcount))
 	else:
 		to_date = get_next_date(ref_wrapper.to_date, mcount)
 
@@ -124,7 +123,7 @@ def send_notification(new_rv):
 	frappe.sendmail(new_rv.notification_email_address,
 		subject=  _("New {0}: #{1}").format(new_rv.doctype, new_rv.name),
 		message = _("Please find attached {0} #{1}").format(new_rv.doctype, new_rv.name),
-		attachments = [frappe.attach_print(new_rv.doctype, new_rv.name, file_name=new_rv.name)])
+		attachments = [frappe.attach_print(new_rv.doctype, new_rv.name, file_name=new_rv.name, print_format=new_rv.recurring_print_format)])
 
 def notify_errors(doc, doctype, party, owner):
 	from frappe.utils.user import get_system_managers
@@ -142,7 +141,7 @@ def notify_errors(doc, doctype, party, owner):
 
 def assign_task_to_owner(doc, doctype, msg, users):
 	for d in users:
-		from frappe.widgets.form import assign_to
+		from frappe.desk.form import assign_to
 		args = {
 			'assign_to' 	:	d,
 			'doctype'		:	doctype,
@@ -161,7 +160,7 @@ def validate_recurring_document(doc):
 			raise_exception=1)
 
 		elif not (doc.from_date and doc.to_date):
-			throw(_("Period From and Period To dates mandatory for recurring %s") % doc.doctype)
+			throw(_("Period From and Period To dates mandatory for recurring {0}").format(doc.doctype))
 
 #
 def convert_to_recurring(doc, posting_date):
@@ -178,8 +177,7 @@ def convert_to_recurring(doc, posting_date):
 
 def validate_notification_email_id(doc):
 	if doc.notification_email_address:
-		email_list = filter(None, [cstr(email).strip() for email in
-			doc.notification_email_address.replace("\n", "").split(",")])
+		email_list = split_emails(doc.notification_email_address.replace("\n", ""))
 
 		from frappe.utils import validate_email_add
 		for email in email_list:

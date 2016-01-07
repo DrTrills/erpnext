@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from frappe import _
 
 def get_data():
@@ -6,6 +7,11 @@ def get_data():
 			"label": _("Documents"),
 			"icon": "icon-star",
 			"items": [
+				{
+					"type": "doctype",
+					"name": "Item",
+					"description": _("All Products or Services."),
+				},
 				{
 					"type": "doctype",
 					"name": "Material Request",
@@ -30,11 +36,6 @@ def get_data():
 					"type": "doctype",
 					"name": "Installation Note",
 					"description": _("Installation record for a Serial No.")
-				},
-				{
-					"type": "doctype",
-					"name": "Item",
-					"description": _("All Products or Services."),
 				},
 				{
 					"type": "doctype",
@@ -76,12 +77,7 @@ def get_data():
 					"type": "doctype",
 					"name": "Landed Cost Voucher",
 					"description": _("Update additional costs to calculate landed cost of items"),
-				},
-				{
-					"type": "doctype",
-					"name": "Stock UOM Replace Utility",
-					"description": _("Change UOM for an Item."),
-				},
+				}
 			]
 		},
 		{
@@ -129,6 +125,11 @@ def get_data():
 					"description": _("Multiple Item prices."),
 					"route": "Report/Item Price"
 				},
+				{
+					"type": "doctype",
+					"name": "Item Attribute",
+					"description": _("Attributes for Item Variants. e.g Size, Color etc."),
+				},
 			]
 		},
 		{
@@ -139,13 +140,13 @@ def get_data():
 					"type": "report",
 					"is_query_report": True,
 					"name": "Stock Ledger",
-					"doctype": "Item",
+					"doctype": "Stock Ledger Entry",
 				},
 				{
 					"type": "report",
 					"is_query_report": True,
 					"name": "Stock Balance",
-					"doctype": "Warehouse"
+					"doctype": "Stock Ledger Entry"
 				},
 				{
 					"type": "report",
@@ -248,4 +249,45 @@ def get_data():
 				},
 			]
 		},
+		{
+			"label": _("Help"),
+			"icon": "icon-facetime-video",
+			"items": [
+				{
+					"type": "help",
+					"label": _("Items and Pricing"),
+					"youtube_id": "qXaEwld4_Ps"
+				},
+				{
+					"type": "help",
+					"label": _("Item Variants"),
+					"youtube_id": "OGBETlCzU5o"
+				},
+				{
+					"type": "help",
+					"label": _("Opening Stock Balance"),
+					"youtube_id": "0yPgrtfeCTs"
+				},
+				{
+					"type": "help",
+					"label": _("Making Stock Entries"),
+					"youtube_id": "Njt107hlY3I"
+				},
+				{
+					"type": "help",
+					"label": _("Serialized Inventory"),
+					"youtube_id": "gvOVlEwFDAk"
+				},
+				{
+					"type": "help",
+					"label": _("Batch Inventory"),
+					"youtube_id": "J0QKl7ABPKM"
+				},
+				{
+					"type": "help",
+					"label": _("Managing Subcontracting"),
+					"youtube_id": "ThiMCC2DtKo"
+				},
+			]
+		}
 	]

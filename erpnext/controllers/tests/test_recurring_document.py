@@ -1,13 +1,14 @@
-# Copyright (c) 2013, Web Notes Technologies Pvt. Ltd. and Contributors
+# Copyright (c) 2015, Frappe Technologies Pvt. Ltd. and Contributors
 # License: GNU General Public License v3. See license.txt
+from __future__ import unicode_literals
 
 import frappe
 import frappe.permissions
 from erpnext.controllers.recurring_document import date_field_map
+from frappe.utils import get_first_day, get_last_day, add_to_date, nowdate, getdate, add_days
+from erpnext.accounts.utils import get_fiscal_year
 
 def test_recurring_document(obj, test_records):
-	from frappe.utils import get_first_day, get_last_day, add_to_date, nowdate, getdate, add_days
-	from erpnext.accounts.utils import get_fiscal_year
 	frappe.db.set_value("Print Settings", "Print Settings", "send_print_as_pdf", 1)
 	today = nowdate()
 	base_doc = frappe.copy_doc(test_records[0])
@@ -36,14 +37,15 @@ def test_recurring_document(obj, test_records):
 	_test_recurring_document(obj, doc1, date_field, True)
 
 	# monthly without a first and last day period
-	doc2 = frappe.copy_doc(base_doc)
-	doc2.update({
-		"from_date": today,
-		"to_date": add_to_date(today, days=30)
-	})
-	doc2.insert()
-	doc2.submit()
-	_test_recurring_document(obj, doc2, date_field, False)
+	if getdate(today).day != 1:
+		doc2 = frappe.copy_doc(base_doc)
+		doc2.update({
+			"from_date": today,
+			"to_date": add_to_date(today, days=30)
+		})
+		doc2.insert()
+		doc2.submit()
+		_test_recurring_document(obj, doc2, date_field, False)
 
 	# quarterly
 	doc3 = frappe.copy_doc(base_doc)
@@ -131,19 +133,14 @@ def _test_recurring_document(obj, base_doc, date_field, first_and_last_day):
 				obj.assertEquals(base_doc.get(fieldname),
 					new_doc.get(fieldname))
 
-		obj.assertEquals(new_doc.get(date_field), unicode(next_date))
+		obj.assertEquals(new_doc.get(date_field), getdate(next_date))
 
-		obj.assertEquals(new_doc.from_date,
-			unicode(add_months(base_doc.from_date, no_of_months)))
+		obj.assertEquals(new_doc.from_date,	getdate(add_months(base_doc.from_date, no_of_months)))
 
 		if first_and_last_day:
-			obj.assertEquals(new_doc.to_date,
-				unicode(get_last_day(add_months(base_doc.to_date,
-					no_of_months))))
+			obj.assertEquals(new_doc.to_date, getdate(get_last_day(add_months(base_doc.to_date, no_of_months))))
 		else:
-			obj.assertEquals(new_doc.to_date,
-				unicode(add_months(base_doc.to_date, no_of_months)))
-
+			obj.assertEquals(new_doc.to_date, getdate(add_months(base_doc.to_date, no_of_months)))
 
 		return new_doc
 
