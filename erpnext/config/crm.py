@@ -133,8 +133,8 @@ def get_data():
 				{
 					"type": "report",
 					"is_query_report": True,
-					"name": "Customers Not Buying Since Long Time",
-					"doctype": "Sales Order"
+					"name": "Inactive Customers",
+					"doctype": "Sales Order",
 				},
 			]
 		},
